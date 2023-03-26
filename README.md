@@ -4,5 +4,5 @@ As the name suggests, this Python script counts how many days has it been since 
 ### To run the bot
 - You need at least Python 3.9
 - Install the Telegram API with the command ```pip install python-telegram-bot```
-- Fill your bot credentials and channel ID to ```config.env```
+- Fill your bot credentials and channel ID to ```main.py```
 - Run the script with ```python3 main.py```
