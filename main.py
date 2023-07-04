@@ -1,42 +1,30 @@
-import time
 import datetime
-import asyncio
-import telegram.ext
+import logging
+from telegram import Update
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 
-# Your Telegram bot token and chat ID
-bot_token = 'TOKEN'
-chat_id = 'TG_ID'
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
 
-# Create an instance of the Telegram bot
-bot = telegram.Bot(token=bot_token)
+def date():
+    current_date = datetime.datetime.now().date()
 
-# Set a specified time to send the message
-# In this case midnight
-send_time = datetime.time(hour=0, minute=0, second=0)
+    target_date = datetime.date(2022, 8, 1)
 
-# Function to send the message
-async def send_daily_message(message):
-    await bot.send_message(chat_id=chat_id, text=message)
+    days_since = (current_date - target_date).days
 
-# Loop indefinitely
-while True:
+    text=f"It has been {days_since} days since Bakugou Katsuki died."
+    return text
 
-    # Calculate Bakugou's death date
-    now = datetime.datetime.now().time()    ## Get the current time
-    d0 = datetime.datetime(2022, 8, 1)
-    d1 = datetime.datetime.now()
-    delta = d1 - d0
-    days = delta.days
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=date())
+
+if __name__ == '__main__':
+    application = ApplicationBuilder().token('TOKEN').build()
     
-    # Message
-    message = (f"""Bakugou Katsuki has been dead for {days} days.""")
-
-    # Check if it's time to send the message
-    if now.hour == send_time.hour:
-        # Create an event loop
-        loop = asyncio.get_event_loop()
-        # Run the function to send the message
-        loop.run_until_complete(send_daily_message(message))
-
-    # Sleep before checking the time again
-    time.sleep(60)
+    start_handler = CommandHandler('start', start)
+    application.add_handler(start_handler)
+    
+    application.run_polling()
